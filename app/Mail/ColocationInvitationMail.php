@@ -16,7 +16,7 @@ class ColocationInvitationMail extends Mailable
     /**
      * Create a new message instance.
      */
-    public function __construct()
+    public function __construct(public string $urlToSend)
     {
         //
     }

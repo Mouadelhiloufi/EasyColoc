@@ -54,6 +54,10 @@
                                     <span class="text-sm px-2 py-1 rounded bg-gray-100">
                                         {{ $user->pivot->role }}
                                     </span>
+                                    <form method="POST" action="{{ route('leave', $colocation) }}">
+    @csrf
+    <button>Quitter</button>
+</form>
                                 </li>
                             @endforeach
                         </ul>

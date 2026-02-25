@@ -96,7 +96,7 @@ class ColocationController extends Controller
 
         $user_id=Auth::id();
         $isOwner=$colocation->users()
-        ->where('users.id',$user_id)
+        ->where('users.id','$user_id')
         ->wherePivot('role','owner')
         ->wherePivotNull('left_at')
         ->exists();
@@ -105,7 +105,7 @@ class ColocationController extends Controller
 
         $colocation->update(['name' =>$request->name]);
         
-        return redirect()->route('colocations.show',$colocation);
+        return redirect()->route('colocation.show','$colocation');
     }
 
     /**
