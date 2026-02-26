@@ -14,4 +14,10 @@ protected $fillable = ['name'];
 {
     return $this->hasMany(Expense::class);
 }
+
+public function colocation()
+{
+    return $this->belongsTo(Colocation::class);
+}
+
 }
