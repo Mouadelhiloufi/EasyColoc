@@ -67,14 +67,24 @@ class ColocationController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Colocation $colocation)
+    public function show(Request $request,Colocation $colocation)
     {
+        $year=$request->get('year');
+        $month=$request->get('month');
         $user_id=Auth::id();
         $isMember = $colocation->users()->where('users.id',$user_id)->exists();
 
         abort_unless($isMember, 403);
-        $colocation->load(['users', 'expenses.category','Invitations']);
-        return view('colocations.show',compact('colocation'));
+        $colocation->load(['users','Invitations']);
+        if($year && $month){
+            $expenses=$colocation->expenses()->with('category')->whereYear('date',$year)->whereMonth('date',$month)->get();
+        }else{
+            $expenses=$colocation->expenses()->with('category')->get();
+        }
+        
+     
+              return view('colocations.show',compact('colocation','expenses'));
+              
     }
 
     /**
