@@ -74,6 +74,7 @@ class InvitationController extends Controller
     }
 
     public function accept($token){
+       
         $inv = Invitation::where('token', $token)->firstOrFail();
 
         $colocation=$inv->colocation;
@@ -92,6 +93,7 @@ class InvitationController extends Controller
     }
 
     public function refuse($token){
+        
         $inv=Invitation::where('token',$token)->firstOrFail();
 
         $inv->update(['status'=>'refused']);
