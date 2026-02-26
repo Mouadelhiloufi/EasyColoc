@@ -4,6 +4,8 @@ use App\Http\Controllers\ColocationController;
 use App\Http\Controllers\InvitationController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\MemberController;
+use App\Http\Controllers\ExpenseController;
+use App\Http\Controllers\CategoryController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -33,6 +35,12 @@ Route::middleware('auth')->group(function () {
     ->name('leave');
     Route::post('/colocations/{colocation}/remove/{user}', [MemberController::class, 'remove'])
     ->name('remove');
+
+    Route::post('/colocations/{colocation}/expenses', [ExpenseController::class, 'store'])
+    ->name('expenses.store');
+
+    Route::post('/colocations/{colocation}/categories', [CategoryController::class, 'store'])
+    ->name('categories.store');
 });
 
 
