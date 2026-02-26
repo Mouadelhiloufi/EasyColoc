@@ -35,11 +35,12 @@ class ColocationInvitationMail extends Mailable
      * Get the message content definition.
      */
     public function content(): Content
-    {
-        return new Content(
-            view: 'view.name',
-        );
-    }
+{
+    return new Content(
+        view: 'emails.colocation_invitation',
+        with: ['urlToSend' => $this->urlToSend],
+    );
+}
 
     /**
      * Get the attachments for the message.
