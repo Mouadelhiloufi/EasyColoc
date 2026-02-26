@@ -5,22 +5,38 @@
                 {{ $colocation->name }}
             </h2>
 
-            <div class="flex items-center gap-2">
-                <a href="{{ route('colocations.edit', $colocation) }}"
-                   class="px-4 py-2 rounded bg-gray-100 hover:bg-gray-200">
-                    Modifier
-                </a>
+            
 
-                <form method="POST" action="{{ route('colocations.destroy', $colocation) }}"
-                      onsubmit="return confirm('Annuler cette colocation ?');">
-                    @csrf
-                    @method('DELETE')
-                    <button type="submit"
-                            class="px-4 py-2 rounded bg-red-600 text-white hover:bg-red-700">
-                        Annuler
-                    </button>
-                </form>
-            </div>
+
+
+            <div class="flex items-center gap-2">
+    <a href="{{ route('invitations.create', $colocation) }}"
+       class="px-4 py-2 rounded bg-indigo-600 text-white hover:bg-indigo-700">
+        Ajouter
+    </a>
+
+    <a href="{{ route('colocations.edit', $colocation) }}"
+       class="px-4 py-2 rounded bg-gray-100 hover:bg-gray-200">
+        Modifier
+    </a>
+
+    <form method="POST" action="{{ route('colocations.destroy', $colocation) }}"
+          onsubmit="return confirm('Annuler cette colocation ?');">
+        @csrf
+        @method('DELETE')
+        <button type="submit"
+                class="px-4 py-2 rounded bg-red-600 text-white hover:bg-red-700">
+            Annuler
+        </button>
+    </form>
+
+    <form method="POST" action="{{ route('leave', $colocation) }}">
+        @csrf
+        <button class="px-4 py-2 rounded bg-gray-800 text-white hover:bg-gray-900">
+            Quitter
+        </button>
+    </form>
+</div>
         </div>
     </x-slot>
 
@@ -45,19 +61,31 @@
                         <div class="text-gray-600 text-sm">Aucun membre.</div>
                     @else
                         <ul class="divide-y">
-                            @foreach($colocation->users as $user)
+                            @foreach($colocation->users->whereNull('pivot.left_at') as $user)
                                 <li class="py-3 flex items-center justify-between">
                                     <div>
                                         <div class="font-medium">{{ $user->name }}</div>
                                         <div class="text-sm text-gray-600">{{ $user->email }}</div>
+                                        <div class="text-sm text-gray-600">
+                                            Rôle: {{ $user->pivot->role }} • Score: {{ $user->pivot->score ?? 0 }}
+                                        </div>
                                     </div>
-                                    <span class="text-sm px-2 py-1 rounded bg-gray-100">
-                                        {{ $user->pivot->role }}
-                                    </span>
-                                    <form method="POST" action="{{ route('leave', $colocation) }}">
-    @csrf
-    <button>Quitter</button>
-</form>
+
+                                    <div class="flex items-center gap-3">
+                                        <span class="text-sm px-2 py-1 rounded bg-gray-100">
+                                            {{ $user->pivot->role }}
+                                        </span>
+
+                                        {{-- Retirer (toujours affiché pour tous) --}}
+                                        <form method="POST" action="{{ route('remove', [$colocation, $user]) }}"
+                                              onsubmit="return confirm('Retirer ce membre ?');">
+                                            @csrf
+                                            <button type="submit"
+                                                    class="px-3 py-1 rounded bg-red-600 text-white">
+                                                Retirer
+                                            </button>
+                                        </form>
+                                    </div>
                                 </li>
                             @endforeach
                         </ul>
