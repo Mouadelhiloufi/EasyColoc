@@ -23,17 +23,18 @@ Route::middleware('auth')->group(function () {
     ->name('invitations.create');
     Route::post('/colocations/{colocation}/invite', [InvitationController::class, 'store'])
     ->name('invitations.store');
-    Route::get('/invitation/{token}', [InvitationController::class, 'page'])
-    ->name('invitation.page');
     Route::post('/invitation/{token}/accept', [InvitationController::class, 'accept'])
     ->name('invitation.accept');
     Route::post('/invitation/{token}/refuse', [InvitationController::class, 'refuse'])
     ->name('invitation.refuse');
+    Route::get('/invitation/{token}', [InvitationController::class, 'page'])
+    ->name('invitation.page');
     Route::post('/colocations/{colocation}/leave', [MemberController::class, 'leave'])
     ->name('leave');
     Route::post('/colocations/{colocation}/remove/{user}', [MemberController::class, 'remove'])
     ->name('remove');
 });
+
 
 
 
