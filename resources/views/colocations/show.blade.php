@@ -107,11 +107,11 @@
                 <div class="bg-white shadow-sm sm:rounded-lg p-6">
                     <h3 class="font-semibold mb-4">Dépenses</h3>
 
-                    @if($colocation->expenses->isEmpty())
+                    @if($expenses->isEmpty())
                         <div class="text-gray-600 text-sm">Aucune dépense.</div>
                     @else
                         <ul class="divide-y">
-                            @foreach($colocation->expenses as $expense)
+                            @foreach($expenses as $expense)
                                 <li class="py-3">
                                     <div class="font-medium">
                                         {{ $expense->title }} — {{ $expense->amount }}
@@ -128,6 +128,22 @@
                 </div>
 
             </div>
+
+            <form method="GET" class="flex gap-2 mb-4">
+    <input type="number" name="month" min="1" max="12"
+           placeholder="Mois"
+           value="{{ request('month') }}"
+           class="border rounded px-2 py-1">
+
+    <input type="number" name="year"
+           placeholder="Année"
+           value="{{ request('year') }}"
+           class="border rounded px-2 py-1">
+
+    <button class="px-3 py-1 bg-indigo-600 text-white rounded">
+        Filtrer
+    </button>
+</form>
 
             <div>
                 <a href="{{ route('colocations.index') }}"
