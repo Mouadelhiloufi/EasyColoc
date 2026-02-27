@@ -39,6 +39,18 @@ class User extends Authenticatable
         ->withTimestamps();
     }
 
+    // Dettes où je dois payer
+    public function debtsAsDebiteur()
+    {
+    return $this->hasMany(Debt::class, 'debuteur');
+    }
+
+// Dettes où on me doit
+    public function debtsAsCrediteur()
+    {
+    return $this->hasMany(Debt::class, 'crediteur');
+    }
+
     /**
      * Get the attributes that should be cast.
      *
