@@ -37,7 +37,7 @@ class ExpenseController extends Controller
             'category_id'=>['nullable']
         ]);
 
-        Expense::create([
+        $expense=Expense::create([
             'title'=>$request->title,
             'amount'=>$request->amount,
             'date'=>$request->date,
@@ -46,6 +46,74 @@ class ExpenseController extends Controller
             'payer_id'=>Auth::id(),
 
         ]);
+        $array = $expense->colocation->users()
+        ->wherePivot('status', 'accepted') // si status est pivot
+        ->pluck('users.id')
+        ->all(); 
+
+        $count=$colocation->users()->count();
+        
+        $members_credit=$colocation->users()->where('users.id','!=',Auth::id())->get();
+        $calc=$expense->amount/$count;
+        $debuteur=Auth::id();
+        $member=$expense->colocation->users()->where('users.id',$debuteur)->firstOrFail();
+
+        
+        
+
+    $members=$expense->colocation->users()->get();
+        foreach($members_credit as $m){
+        if($m->id != $debuteur){
+            $colocation->users()->updateExistingPivot($m->id, [
+            'balance' => $m->pivot->balance - $calc,
+        ]);
+
+             $colocation->users()->updateExistingPivot($member->id, [
+            'balance' => $member->pivot->balance + $calc,
+        ]);
+            $member->pivot->balance = $member->pivot->balance + $calc;
+        }
+        }
+        $member->save();
+
+        foreach($array as $id){
+            if($member->id!=$id){
+                $debut = $member->debtsAsCrediteur()
+                ->where('debuteur', $id)
+                ->where('status', 'unpaid')
+                ->first();
+                // ana likantsal
+                $credit = $member->debtsAsDebiteur()->where('crediteur', $id)->where('status', 'unpaid')->first();
+                // ana likhasni nkhls
+
+                if($debut){
+                    $debut->amount+=$calc;
+                    $debut->save();
+                }else if($credit){
+                    $temp=$credit->amount-$calc;
+                    if($temp<0){
+                        $credit->crediteur=$member->id;
+                        $credit->debuteur=$id;
+                        $credit->amount=(-$temp);
+                    }else{
+                        $credit->amount=$credit->amount-$calc;
+                    }
+                    $credit->save();
+                }
+                else{
+                    $expense->colocation->debts()->create([
+                        'amount'=>$calc,
+                        'debuteur'=>$id,
+                        'crediteur'=>$member->id,
+                        'status'=>'unpaid',
+                    ]);
+                }
+            }
+        }
+
+
+
+
     return back();
     }
 
