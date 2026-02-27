@@ -81,9 +81,15 @@ class ColocationController extends Controller
         }else{
             $expenses=$colocation->expenses()->with('category')->get();
         }
+
+        $debts = $colocation->debts()->where('status','unpaid')
+        ->with(['debiteurUser','crediteurUser'])
+        ->get();
+
+
         
      
-              return view('colocations.show',compact('colocation','expenses'));
+              return view('colocations.show',compact('colocation','expenses','debts'));
               
     }
 
