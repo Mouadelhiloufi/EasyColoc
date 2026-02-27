@@ -104,6 +104,38 @@
                     @endif
                 </div>
 
+
+
+                <div class="bg-white shadow-sm sm:rounded-lg p-6">
+    <h3 class="font-semibold mb-4">Qui doit à qui</h3>
+
+    @php
+        $list = isset($debts) ? $debts : $colocation->debts->where('status','unpaid');
+    @endphp
+
+    @if($list->isEmpty())
+        <div class="text-gray-600 text-sm">Tout est équilibré ✅</div>
+    @else
+        <ul class="divide-y">
+            @foreach($list as $d)
+                <li class="py-3 flex items-center justify-between">
+                    <div class="text-gray-800">
+                        <strong>{{ $d->debiteurUser?->name ?? 'User' }}</strong>
+                        doit à
+                        <strong>{{ $d->crediteurUser?->name ?? 'User' }}</strong>
+                    </div>
+
+                    <span class="px-3 py-1 rounded bg-indigo-100 text-indigo-800 text-sm">
+                        {{ number_format($d->amount, 2) }}
+                    </span>
+                </li>
+            @endforeach
+        </ul>
+    @endif
+</div>
+
+
+
                 <div class="bg-white shadow-sm sm:rounded-lg p-6">
                     <h3 class="font-semibold mb-4">Dépenses</h3>
 
