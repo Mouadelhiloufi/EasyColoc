@@ -124,11 +124,19 @@
                         doit à
                         <strong>{{ $d->crediteurUser?->name ?? 'User' }}</strong>
                     </div>
+                    
 
                     <span class="px-3 py-1 rounded bg-indigo-100 text-indigo-800 text-sm">
                         {{ number_format($d->amount, 2) }}
                     </span>
+                    <form method="POST" action="{{ route('debts.pay', $d) }}">
+                        @csrf
+                    <button class="px-3 py-1 rounded bg-green-600 text-white">
+                     Marquer payé
+                  </button>
+            </form>
                 </li>
+                
             @endforeach
         </ul>
     @endif

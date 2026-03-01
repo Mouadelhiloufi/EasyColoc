@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules;
 use Illuminate\View\View;
+use App\Models\Admin;
 
 class RegisteredUserController extends Controller
 {
@@ -40,6 +41,10 @@ class RegisteredUserController extends Controller
             'email' => $request->email,
             'password' => Hash::make($request->password),
         ]);
+
+        if (Admin::count() === 0) {
+        Admin::create(['user_id' => $user->id]);
+        }
 
         event(new Registered($user));
 

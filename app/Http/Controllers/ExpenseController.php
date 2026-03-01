@@ -46,22 +46,22 @@ class ExpenseController extends Controller
             'payer_id'=>Auth::id(),
 
         ]);
-        $array = $expense->colocation->users()
-        ->wherePivot('status', 'accepted') // si status est pivot
-        ->pluck('users.id')
-        ->all(); 
-
-        $count=$colocation->users()->count();
         
-        $members_credit=$colocation->users()->where('users.id','!=',Auth::id())->get();
+        $array = $expense->colocation->users()
+        ->wherePivotNull('left_at')
+         ->pluck('users.id')
+        ->all();
+
+        $count = $colocation->users()
+        ->wherePivotNull('left_at')
+        ->count();
+        
+       $members_credit = $colocation->users()->wherePivotNull('left_at')->where('users.id', '!=', Auth::id())->get();
         $calc=$expense->amount/$count;
         $debuteur=Auth::id();
         $member=$expense->colocation->users()->where('users.id',$debuteur)->firstOrFail();
 
         
-        
-
-    $members=$expense->colocation->users()->get();
         foreach($members_credit as $m){
         if($m->id != $debuteur){
             $colocation->users()->updateExistingPivot($m->id, [
@@ -74,7 +74,7 @@ class ExpenseController extends Controller
             $member->pivot->balance = $member->pivot->balance + $calc;
         }
         }
-        $member->save();
+        
 
         foreach($array as $id){
             if($member->id!=$id){

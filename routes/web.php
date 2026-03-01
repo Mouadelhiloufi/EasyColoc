@@ -6,7 +6,10 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\MemberController;
 use App\Http\Controllers\ExpenseController;
 use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\PayementController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\AdminDashboardController;
+use App\Http\Controllers\AdminController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -17,7 +20,25 @@ Route::get('/dashboard', function () {
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::middleware('auth')->group(function () {
-    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+    
+});
+
+
+Route::middleware(['auth', 'admin'])->group(function () {
+    Route::get('/admin/dashboard', [AdminDashboardController::class, 'index'])
+        ->name('admin.dashboard');
+
+    Route::post('/admin/users/{user}/ban', [AdminController::class, 'ban'])
+        ->name('admin.users.ban');
+
+    Route::post('/admin/users/{user}/unban', [AdminController::class, 'unban'])
+        ->name('admin.users.unban');
+});
+
+
+
+Route::middleware(['auth', 'banned'])->group(function () {
+   Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
     Route::resource('colocations',ColocationController::class);
@@ -41,6 +62,10 @@ Route::middleware('auth')->group(function () {
 
     Route::post('/colocations/{colocation}/categories', [CategoryController::class, 'store'])
     ->name('categories.store');
+
+
+    Route::post('/debts/{debt}/pay', [PayementController::class, 'pay'])
+    ->name('debts.pay');
 });
 
 
