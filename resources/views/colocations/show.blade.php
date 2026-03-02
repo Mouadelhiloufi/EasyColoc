@@ -1,102 +1,100 @@
 <x-app-layout>
     <x-slot name="header">
         <div class="flex items-center justify-between">
-            <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+            <h2 class="font-bold text-2xl text-white">
                 {{ $colocation->name }}
             </h2>
 
-            
-
-
-
             <div class="flex items-center gap-2">
-    <a href="{{ route('invitations.create', $colocation) }}"
-       class="px-4 py-2 rounded bg-indigo-600 text-white hover:bg-indigo-700">
-        Ajouter membre
-    </a>
+                @php
+                    $userRole = $colocation->users->where('id', auth()->id())->first()?->pivot->role;
+                @endphp
 
-    <button type="button"
-        onclick="openCategoryModal()"
-        class="px-4 py-2 rounded bg-blue-600 text-white hover:bg-blue-700">
-    Ajouter catégorie
-</button>
+                @if($userRole === 'owner')
+                    <a href="{{ route('colocations.edit', $colocation) }}"
+                       class="px-4 py-2 rounded-lg bg-white/5 border border-white/20 text-white hover:bg-white/10 transition-all">
+                        Modifier
+                    </a>
+                @endif
 
-    <button type="button"
-        onclick="openExpenseModal()"
-        class="px-4 py-2 rounded bg-green-600 text-white hover:bg-green-700">
-    Ajouter dépense
-    </button>
-
-    <a href="{{ route('colocations.edit', $colocation) }}"
-       class="px-4 py-2 rounded bg-gray-100 hover:bg-gray-200">
-        Modifier
-    </a>
-
-    <form method="POST" action="{{ route('colocations.destroy', $colocation) }}"
-          onsubmit="return confirm('Annuler cette colocation ?');">
-        @csrf
-        @method('DELETE')
-        <button type="submit"
-                class="px-4 py-2 rounded bg-red-600 text-white hover:bg-red-700">
-            Annuler
-        </button>
-    </form>
-
-    <form method="POST" action="{{ route('leave', $colocation) }}">
-        @csrf
-        <button class="px-4 py-2 rounded bg-gray-800 text-white hover:bg-gray-900">
-            Quitter
-        </button>
-    </form>
-</div>
+                <form method="POST" action="{{ route('leave', $colocation) }}">
+                    @csrf
+                    <button class="px-4 py-2 rounded-lg bg-red-600 text-white hover:bg-red-700 transition-all">
+                        Quitter
+                    </button>
+                </form>
+            </div>
         </div>
     </x-slot>
 
     <div class="py-6">
-        <div class="max-w-5xl mx-auto sm:px-6 lg:px-8 space-y-6">
+        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
 
-            <div class="bg-white shadow-sm sm:rounded-lg p-6">
-                <div class="text-sm text-gray-600">
-                    Status : <span class="font-medium">{{ $colocation->status }}</span>
+            <!-- Actions rapides -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <button type="button"
+                    onclick="openCategoryModal()"
+                    class="p-6 bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl hover:bg-white/10 transition-all group">
+                    <div class="text-3xl mb-2">📁</div>
+                    <div class="text-white font-semibold">Ajouter catégorie</div>
+                </button>
+
+                <button type="button"
+                    onclick="openExpenseModal()"
+                    class="p-6 bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl hover:bg-white/10 transition-all group">
+                    <div class="text-3xl mb-2">💰</div>
+                    <div class="text-white font-semibold">Ajouter dépense</div>
+                </button>
+
+                <a href="{{ route('invitations.create', $colocation) }}"
+                   class="p-6 bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl hover:bg-white/10 transition-all group">
+                    <div class="text-3xl mb-2">👥</div>
+                    <div class="text-white font-semibold">Ajouter membre</div>
+                </a>
+            </div>
+
+            <!-- Status -->
+            <div class="bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl p-6">
+                <div class="text-sm text-white/70">
+                    Status : <span class="font-medium text-white">{{ $colocation->status }}</span>
                     @if($colocation->cancelled_at)
                         • Annulée le : {{ \Carbon\Carbon::parse($colocation->cancelled_at)->format('Y-m-d') }}
                     @endif
                 </div>
             </div>
 
+            <!-- Membres et Dettes -->
             <div class="grid md:grid-cols-2 gap-6">
 
-                <div class="bg-white shadow-sm sm:rounded-lg p-6">
-                    <h3 class="font-semibold mb-4">Membres</h3>
+                <!-- Membres -->
+                <div class="bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl p-6">
+                    <h3 class="font-semibold text-white text-lg mb-4">Membres</h3>
 
                     @if($colocation->users->isEmpty())
-                        <div class="text-gray-600 text-sm">Aucun membre.</div>
+                        <div class="text-white/60 text-sm">Aucun membre.</div>
                     @else
-                        <ul class="divide-y">
+                        <ul class="space-y-3">
                             @foreach($colocation->users->whereNull('pivot.left_at') as $user)
-                                <li class="py-3 flex items-center justify-between">
-                                    <div>
-                                        <div class="font-medium">{{ $user->name }}</div>
-                                        <div class="text-sm text-gray-600">{{ $user->email }}</div>
-                                        <div class="text-sm text-gray-600">
-                                            Rôle: {{ $user->pivot->role }} • Score: {{ $user->pivot->score ?? 0 }}
+                                <li class="p-4 bg-white/5 rounded-lg border border-white/10">
+                                    <div class="flex items-center justify-between">
+                                        <div>
+                                            <div class="font-medium text-white">{{ $user->name }}</div>
+                                            <div class="text-sm text-white/60">{{ $user->email }}</div>
+                                            <div class="text-sm text-white/60 mt-1">
+                                                Rôle: {{ $user->pivot->role }} • Score: {{ $user->pivot->score ?? 0 }}
+                                            </div>
                                         </div>
-                                    </div>
 
-                                    <div class="flex items-center gap-3">
-                                        <span class="text-sm px-2 py-1 rounded bg-gray-100">
-                                            {{ $user->pivot->role }}
-                                        </span>
-
-                                        {{-- Retirer (toujours affiché pour tous) --}}
-                                        <form method="POST" action="{{ route('remove', [$colocation, $user]) }}"
-                                              onsubmit="return confirm('Retirer ce membre ?');">
-                                            @csrf
-                                            <button type="submit"
-                                                    class="px-3 py-1 rounded bg-red-600 text-white">
-                                                Retirer
-                                            </button>
-                                        </form>
+                                        @if($userRole === 'owner')
+                                            <form method="POST" action="{{ route('remove', [$colocation, $user]) }}"
+                                                  onsubmit="return confirm('Retirer ce membre ?');">
+                                                @csrf
+                                                <button type="submit"
+                                                        class="px-3 py-1.5 rounded-lg bg-red-600 text-white text-sm hover:bg-red-700 transition-all">
+                                                    Retirer
+                                                </button>
+                                            </form>
+                                        @endif
                                     </div>
                                 </li>
                             @endforeach
@@ -104,63 +102,36 @@
                     @endif
                 </div>
 
+                <!-- Dettes -->
+                <div class="bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl p-6">
+                    <h3 class="font-semibold text-white text-lg mb-4">Qui doit à qui</h3>
 
+                    @php
+                        $list = isset($debts) ? $debts : $colocation->debts->where('status','unpaid');
+                    @endphp
 
-                <div class="bg-white shadow-sm sm:rounded-lg p-6">
-    <h3 class="font-semibold mb-4">Qui doit à qui</h3>
-
-    @php
-        $list = isset($debts) ? $debts : $colocation->debts->where('status','unpaid');
-    @endphp
-
-    @if($list->isEmpty())
-        <div class="text-gray-600 text-sm">Tout est équilibré ✅</div>
-    @else
-        <ul class="divide-y">
-            @foreach($list as $d)
-                <li class="py-3 flex items-center justify-between">
-                    <div class="text-gray-800">
-                        <strong>{{ $d->debiteurUser?->name ?? 'User' }}</strong>
-                        doit à
-                        <strong>{{ $d->crediteurUser?->name ?? 'User' }}</strong>
-                    </div>
-                    
-
-                    <span class="px-3 py-1 rounded bg-indigo-100 text-indigo-800 text-sm">
-                        {{ number_format($d->amount, 2) }}
-                    </span>
-                    <form method="POST" action="{{ route('debts.pay', $d) }}">
-                        @csrf
-                    <button class="px-3 py-1 rounded bg-green-600 text-white">
-                     Marquer payé
-                  </button>
-            </form>
-                </li>
-                
-            @endforeach
-        </ul>
-    @endif
-</div>
-
-
-
-                <div class="bg-white shadow-sm sm:rounded-lg p-6">
-                    <h3 class="font-semibold mb-4">Dépenses</h3>
-
-                    @if($expenses->isEmpty())
-                        <div class="text-gray-600 text-sm">Aucune dépense.</div>
+                    @if($list->isEmpty())
+                        <div class="text-white/60 text-sm">Tout est équilibré ✅</div>
                     @else
-                        <ul class="divide-y">
-                            @foreach($expenses as $expense)
-                                <li class="py-3">
-                                    <div class="font-medium">
-                                        {{ $expense->title }} — {{ $expense->amount }}
+                        <ul class="space-y-3">
+                            @foreach($list as $d)
+                                <li class="p-4 bg-white/5 rounded-lg border border-white/10">
+                                    <div class="flex items-center justify-between mb-2">
+                                        <div class="text-white text-sm">
+                                            <strong>{{ $d->debiteurUser?->name ?? 'User' }}</strong>
+                                            doit à
+                                            <strong>{{ $d->crediteurUser?->name ?? 'User' }}</strong>
+                                        </div>
+                                        <span class="px-3 py-1 rounded-lg bg-red-600/20 text-red-400 text-sm font-semibold">
+                                            {{ number_format($d->amount, 2) }} €
+                                        </span>
                                     </div>
-                                    <div class="text-sm text-gray-600">
-                                        {{ $expense->date }}
-                                        • {{ $expense->category?->name ?? 'Sans catégorie' }}
-                                        • Payeur: {{ $expense->payer?->email ?? '-' }}
-                                    </div>
+                                    <form method="POST" action="{{ route('debts.pay', $d) }}">
+                                        @csrf
+                                        <button class="w-full px-3 py-1.5 rounded-lg bg-green-600 text-white text-sm hover:bg-green-700 transition-all">
+                                            Marquer payé
+                                        </button>
+                                    </form>
                                 </li>
                             @endforeach
                         </ul>
@@ -169,25 +140,54 @@
 
             </div>
 
-            <form method="GET" class="flex gap-2 mb-4">
-    <input type="number" name="month" min="1" max="12"
-           placeholder="Mois"
-           value="{{ request('month') }}"
-           class="border rounded px-2 py-1">
+            <!-- Dépenses -->
+            <div class="bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl p-6">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="font-semibold text-white text-lg">Dépenses</h3>
+                    
+                    <form method="GET" class="flex gap-2">
+                        <input type="number" name="month" min="1" max="12"
+                               placeholder="Mois"
+                               value="{{ request('month') }}"
+                               class="border-white/20 bg-black/30 text-white placeholder:text-white/40 rounded-lg px-3 py-1.5 text-sm">
 
-    <input type="number" name="year"
-           placeholder="Année"
-           value="{{ request('year') }}"
-           class="border rounded px-2 py-1">
+                        <input type="number" name="year"
+                               placeholder="Année"
+                               value="{{ request('year') }}"
+                               class="border-white/20 bg-black/30 text-white placeholder:text-white/40 rounded-lg px-3 py-1.5 text-sm">
 
-    <button class="px-3 py-1 bg-indigo-600 text-white rounded">
-        Filtrer
-    </button>
-</form>
+                        <button class="px-4 py-1.5 bg-red-600 text-white rounded-lg text-sm hover:bg-red-700 transition-all">
+                            Filtrer
+                        </button>
+                    </form>
+                </div>
+
+                @if($expenses->isEmpty())
+                    <div class="text-white/60 text-sm">Aucune dépense.</div>
+                @else
+                    <ul class="space-y-3">
+                        @foreach($expenses as $expense)
+                            <li class="p-4 bg-white/5 rounded-lg border border-white/10">
+                                <div class="flex items-center justify-between">
+                                    <div>
+                                        <div class="font-medium text-white">{{ $expense->title }}</div>
+                                        <div class="text-sm text-white/60 mt-1">
+                                            {{ $expense->date }}
+                                            • {{ $expense->category?->name ?? 'Sans catégorie' }}
+                                            • Payeur: {{ $expense->payer?->name ?? '-' }}
+                                        </div>
+                                    </div>
+                                    <span class="text-white font-semibold">{{ $expense->amount }} €</span>
+                                </div>
+                            </li>
+                        @endforeach
+                    </ul>
+                @endif
+            </div>
 
             <div>
                 <a href="{{ route('colocations.index') }}"
-                   class="text-indigo-600 hover:underline">
+                   class="text-red-400 hover:text-red-300 transition-colors">
                     ← Retour à la liste
                 </a>
             </div>
@@ -196,140 +196,129 @@
     </div>
 
     <!-- Modal Dépense -->
-<div id="expenseModal" class="fixed inset-0 hidden items-center justify-center bg-black/50 z-50">
-    <div class="bg-white w-full max-w-lg rounded-lg shadow-lg p-6">
+    <div id="expenseModal" class="fixed inset-0 hidden items-center justify-center bg-black/70 backdrop-blur-sm z-50">
+        <div class="bg-gradient-to-br from-gray-900 to-black border border-white/10 w-full max-w-lg rounded-2xl shadow-2xl p-8">
 
-        <div class="flex justify-between items-center mb-4">
-            <h3 class="text-lg font-semibold">Nouvelle dépense</h3>
-            <button onclick="closeExpenseModal()" class="text-gray-500 hover:text-gray-700">✕</button>
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-xl font-bold text-white">Nouvelle dépense</h3>
+                <button onclick="closeExpenseModal()" class="text-white/60 hover:text-white text-2xl">✕</button>
+            </div>
+
+            <form method="POST" action="{{ route('expenses.store', $colocation) }}" class="space-y-4">
+                @csrf
+
+                <div>
+                    <label class="block text-sm font-semibold text-white/90 mb-2">Titre</label>
+                    <input type="text" name="title"
+                           class="w-full rounded-lg bg-black/30 border border-white/20 text-white placeholder:text-white/40 focus:ring-2 focus:ring-red-600"
+                           required>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-semibold text-white/90 mb-2">Montant</label>
+                    <input type="number" step="0.01" name="amount"
+                           class="w-full rounded-lg bg-black/30 border border-white/20 text-white placeholder:text-white/40 focus:ring-2 focus:ring-red-600"
+                           required>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-semibold text-white/90 mb-2">Date</label>
+                    <input type="date" name="date"
+                           class="w-full rounded-lg bg-black/30 border border-white/20 text-white placeholder:text-white/40 focus:ring-2 focus:ring-red-600"
+                           required>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-semibold text-white/90 mb-2">Catégorie</label>
+                    <select name="category_id"
+                            class="w-full rounded-lg bg-black/30 border border-white/20 text-white focus:ring-2 focus:ring-red-600">
+                        <option value="">Sélectionner catégorie</option>
+                        @foreach($colocation->categories as $category)
+                            <option value="{{ $category->id }}">{{ $category->name }}</option>
+                        @endforeach
+                    </select>
+                </div>
+
+                <div class="flex justify-end gap-3 pt-4">
+                    <button type="button"
+                            onclick="closeExpenseModal()"
+                            class="px-6 py-2.5 rounded-lg bg-white/5 border border-white/10 text-white hover:bg-white/10 transition-all">
+                        Annuler
+                    </button>
+
+                    <button type="submit"
+                            class="px-6 py-2.5 rounded-lg bg-red-600 text-white font-semibold hover:bg-red-700 transition-all">
+                        Ajouter
+                    </button>
+                </div>
+
+            </form>
         </div>
-
-        <form method="POST" action="{{ route('expenses.store', $colocation) }}" class="space-y-4">
-            @csrf
-
-            <div>
-                <label class="block text-sm font-medium">Titre</label>
-                <input type="text" name="title"
-                       class="w-full rounded border-gray-300 focus:border-green-500 focus:ring-green-500"
-                       required>
-            </div>
-
-            <div>
-                <label class="block text-sm font-medium">Montant</label>
-                <input type="number" step="0.01" name="amount"
-                       class="w-full rounded border-gray-300 focus:border-green-500 focus:ring-green-500"
-                       required>
-            </div>
-
-            <div>
-                <label class="block text-sm font-medium">Date</label>
-                <input type="date" name="date"
-                       class="w-full rounded border-gray-300 focus:border-green-500 focus:ring-green-500"
-                       required>
-            </div>
-
-            <div>
-                <label class="block text-sm font-medium">Catégorie</label>
-                <select name="category_id"
-                        class="w-full rounded border-gray-300 focus:border-green-500 focus:ring-green-500">
-                    <option value="">Selectionner categories</option>
-                    @foreach($colocation->categories as $category)
-                        <option value="{{ $category->id }}">{{ $category->name }}</option>
-                    @endforeach
-                </select>
-            </div>
-
-            <div class="flex justify-end gap-2">
-                <button type="button"
-                        onclick="closeExpenseModal()"
-                        class="px-4 py-2 rounded bg-gray-200">
-                    Annuler
-                </button>
-
-                <button type="submit"
-                        class="px-4 py-2 rounded bg-green-600 text-white">
-                    Ajouter
-                </button>
-            </div>
-
-        </form>
     </div>
-</div>
 
+    <!-- Modal Catégorie -->
+    <div id="categoryModal" class="fixed inset-0 hidden items-center justify-center bg-black/70 backdrop-blur-sm z-50">
+        <div class="bg-gradient-to-br from-gray-900 to-black border border-white/10 w-full max-w-lg rounded-2xl shadow-2xl p-8">
 
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-xl font-bold text-white">Nouvelle catégorie</h3>
+                <button onclick="closeCategoryModal()" class="text-white/60 hover:text-white text-2xl">✕</button>
+            </div>
 
+            <form method="POST" action="{{ route('categories.store', $colocation) }}" class="space-y-4">
+                @csrf
 
-<script>
-function openExpenseModal() {
-    const modal = document.getElementById('expenseModal');
-    modal.classList.remove('hidden');
-    modal.classList.add('flex');
-}
+                <div>
+                    <label class="block text-sm font-semibold text-white/90 mb-2">Nom</label>
+                    <input type="text" name="name"
+                           class="w-full rounded-lg bg-black/30 border border-white/20 text-white placeholder:text-white/40 focus:ring-2 focus:ring-red-600"
+                           required>
+                </div>
 
-function closeExpenseModal() {
-    const modal = document.getElementById('expenseModal');
-    modal.classList.add('hidden');
-    modal.classList.remove('flex');
-}
+                <div class="flex justify-end gap-3 pt-4">
+                    <button type="button"
+                            onclick="closeCategoryModal()"
+                            class="px-6 py-2.5 rounded-lg bg-white/5 border border-white/10 text-white hover:bg-white/10 transition-all">
+                        Annuler
+                    </button>
 
-document.addEventListener('keydown', function(e) {
-    if (e.key === 'Escape') closeExpenseModal();
-});
-</script>
+                    <button type="submit"
+                            class="px-6 py-2.5 rounded-lg bg-red-600 text-white font-semibold hover:bg-red-700 transition-all">
+                        Ajouter
+                    </button>
+                </div>
 
-
-
-<div id="categoryModal" class="fixed inset-0 hidden items-center justify-center bg-black/50 z-50">
-    <div class="bg-white w-full max-w-lg rounded-lg shadow-lg p-6">
-
-        <div class="flex justify-between items-center mb-4">
-            <h3 class="text-lg font-semibold">Nouvelle catégorie</h3>
-            <button onclick="closeCategoryModal()" class="text-gray-500 hover:text-gray-700">✕</button>
+            </form>
         </div>
-
-        <form method="POST" action="{{ route('categories.store', $colocation) }}" class="space-y-4">
-            @csrf
-
-            <div>
-                <label class="block text-sm font-medium">Nom</label>
-                <input type="text" name="name"
-                       class="w-full rounded border-gray-300 focus:border-blue-500 focus:ring-blue-500"
-                       required>
-            </div>
-
-            <div class="flex justify-end gap-2">
-                <button type="button"
-                        onclick="closeCategoryModal()"
-                        class="px-4 py-2 rounded bg-gray-200">
-                    Annuler
-                </button>
-
-                <button type="submit"
-                        class="px-4 py-2 rounded bg-blue-600 text-white">
-                    Ajouter
-                </button>
-            </div>
-
-        </form>
     </div>
-</div>
 
-<script>
-function openCategoryModal() {
-    const modal = document.getElementById('categoryModal');
-    modal.classList.remove('hidden');
-    modal.classList.add('flex');
-}
-function closeCategoryModal() {
-    const modal = document.getElementById('categoryModal');
-    modal.classList.add('hidden');
-    modal.classList.remove('flex');
-}
-document.addEventListener('keydown', function(e) {
-    if (e.key === 'Escape') closeCategoryModal();
-});
-</script>
+    <script>
+    function openExpenseModal() {
+        document.getElementById('expenseModal').classList.remove('hidden');
+        document.getElementById('expenseModal').classList.add('flex');
+    }
 
+    function closeExpenseModal() {
+        document.getElementById('expenseModal').classList.add('hidden');
+        document.getElementById('expenseModal').classList.remove('flex');
+    }
 
+    function openCategoryModal() {
+        document.getElementById('categoryModal').classList.remove('hidden');
+        document.getElementById('categoryModal').classList.add('flex');
+    }
+
+    function closeCategoryModal() {
+        document.getElementById('categoryModal').classList.add('hidden');
+        document.getElementById('categoryModal').classList.remove('flex');
+    }
+
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            closeExpenseModal();
+            closeCategoryModal();
+        }
+    });
+    </script>
 
 </x-app-layout>

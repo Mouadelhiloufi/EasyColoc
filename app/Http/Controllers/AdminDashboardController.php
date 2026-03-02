@@ -18,7 +18,7 @@ class AdminDashboardController extends Controller
         $totalColocations = Colocation::count();
         $totalExpenses = Expense::sum('amount');
         $activeUsers = User::where('status', '!=', 'banned')->get();
-        $roleUser=$activeUsers->colocation()->pivot('role')->get();
+        
 
         $bannedUsers = User::where('status', 'banned')->latest()->get();
 

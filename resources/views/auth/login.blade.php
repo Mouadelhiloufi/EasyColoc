@@ -13,7 +13,6 @@
             <a href="{{ url('/') }}" class="text-3xl font-semibold tracking-widest text-red-500">COLOC</a>
 
             <nav class="flex items-center gap-6 text-sm text-white/80">
-                <a href="#" class="hover:text-white">Blog</a>
                 <a href="{{ route('login') }}" class="hover:text-white">Se connecter</a>
                 <a href="{{ route('register') }}"
                    class="px-5 py-2 rounded-full border border-red-600 text-red-400 hover:bg-red-600 hover:text-white">

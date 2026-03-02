@@ -8,9 +8,7 @@ use Illuminate\Support\Facades\Auth;
 
 class ColocationController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
+    
     public function index()
     {
         $user = Auth::user();
@@ -23,17 +21,13 @@ class ColocationController extends Controller
     return view('colocations.index', compact('colocations'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
+    
     public function create()
     {
         return view('colocations.create');
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
+    
     public function store(Request $request)
     {
         $request->validate([
@@ -64,9 +58,9 @@ class ColocationController extends Controller
 
         return redirect()->route('colocations.show',$colocation);
     }
-    /**
-     * Display the specified resource.
-     */
+    
+
+
     public function show(Request $request,Colocation $colocation)
     {
         $year=$request->get('year');
@@ -93,17 +87,13 @@ class ColocationController extends Controller
               
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
+//    redirection vers page update
     public function edit(Colocation $colocation)
     {
         return view('colocations.edit',compact('colocation'));
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
+    
     public function update(Request $request, Colocation $colocation)
     {
         $request->validate([

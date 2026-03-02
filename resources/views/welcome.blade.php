@@ -7,93 +7,95 @@
     @vite(['resources/css/app.css','resources/js/app.js'])
 </head>
 
-<body class="min-h-screen bg-black text-white">
+<body class="min-h-screen bg-[#0b0b0b] text-white">
 
-    {{-- NAV --}}
-    <header class="mx-auto max-w-7xl px-6 py-6">
-        <div class="flex items-center justify-between">
-            <a href="/" class="flex items-center gap-3">
+    <header class="border-b border-white/10">
+        <div class="max-w-7xl mx-auto px-6 py-8 flex items-center justify-between">
+            <a href="{{ url('/') }}" class="flex items-center gap-3">
                 <span class="text-2xl">✋</span>
                 <span class="text-xl font-semibold tracking-wide">Coloco</span>
             </a>
 
-            <div class="flex items-center gap-3">
+            <nav class="flex items-center gap-4">
                 <a href="{{ route('login') }}"
-                   class="rounded-full px-4 py-2 text-sm font-medium text-white/80 hover:text-white hover:bg-white/10">
+                   class="rounded-full px-5 py-2.5 text-sm font-medium text-white/80 hover:text-white hover:bg-white/10 transition-all">
                     Se connecter
                 </a>
 
                 <a href="{{ route('register') }}"
-                   class="rounded-full border border-white/20 px-4 py-2 text-sm font-semibold text-white hover:bg-white/10">
-                    S’inscrire
+                   class="rounded-full border border-white/20 px-5 py-2.5 text-sm font-semibold text-white hover:bg-white/10 transition-all">
+                    S'inscrire
                 </a>
-            </div>
+            </nav>
         </div>
     </header>
 
-    {{-- HERO --}}
-    <main class="relative mx-auto max-w-7xl px-6 py-10">
-        {{-- “Rubans” gauche / droite (sans image) --}}
-        <div class="pointer-events-none absolute inset-0 overflow-hidden">
-            <div class="absolute -left-40 top-24 h-[520px] w-[520px] rounded-full border-[32px] border-white/90 opacity-90"></div>
-            <div class="absolute -right-40 top-24 h-[520px] w-[520px] rounded-full border-[32px] border-white/90 opacity-90"></div>
-        </div>
-
-        <div class="relative z-10 flex flex-col items-center">
-
-            {{-- “Cards” en haut (placeholders) --}}
-            <div class="mt-10 flex items-center justify-center gap-6">
-                <div class="h-28 w-40 rotate-[-10deg] rounded-2xl border border-white/20 bg-white/10 shadow-lg backdrop-blur">
-                    <div class="flex h-full items-center justify-center text-white/50 text-sm">
-                        Carte 1
-                    </div>
-                </div>
-
-                <div class="h-28 w-44 rounded-2xl border border-white/20 bg-white/10 shadow-lg backdrop-blur">
-                    <div class="flex h-full items-center justify-center text-white/50 text-sm">
-                        Carte 2
-                    </div>
-                </div>
-
-                <div class="h-28 w-40 rotate-[10deg] rounded-2xl border border-white/20 bg-white/10 shadow-lg backdrop-blur">
-                    <div class="flex h-full items-center justify-center text-white/50 text-sm">
-                        Carte 3
-                    </div>
-                </div>
-            </div>
-
-            {{-- Titre --}}
-            <h1 class="mt-14 text-center text-4xl md:text-5xl font-light">
-                <span class="inline-flex items-center gap-3">
-                    <span class="text-red-500">🏠</span>
-                    Trouve ta colocation idéale
-                    <span class="text-red-500">🔑</span>
-                </span>
+    <main class="max-w-6xl mx-auto px-6">
+        <!-- Hero Section -->
+        <section class="text-center pt-20 pb-20 md:pt-24 md:pb-24">
+            <h1 class="text-5xl md:text-7xl font-light leading-tight text-white mb-10">
+                Trouve ta <span class="text-red-500">colocation</span> idéale
             </h1>
 
-            <p class="mt-4 text-center text-white/60 text-lg">
+            <p class="text-xl md:text-2xl text-white/60 mb-14">
                 Sans prise de tête
             </p>
 
-            {{-- Search (just UI) --}}
-            <div class="mt-10 flex w-full max-w-2xl items-center gap-3 rounded-full bg-white/10 px-5 py-3 border border-white/10 backdrop-blur">
-                <input
-                    type="text"
-                    placeholder="Faites une recherche"
-                    class="w-full bg-transparent outline-none placeholder:text-white/40 text-white"
-                />
+            {{-- Buttons (same line + bigger) --}}
+            <div class="flex items-center justify-center gap-6">
+                <a href="{{ route('register') }}"
+                   class="px-14 md:px-16 py-5 rounded-full bg-red-600 text-white font-semibold
+                          hover:bg-red-700 shadow-lg shadow-red-500/30 transition-all text-lg md:text-xl">
+                    Commencer
+                </a>
 
-                <button
-                    type="button"
-                    class="h-10 w-10 rounded-full bg-white/10 hover:bg-white/15 border border-white/10 flex items-center justify-center"
-                    aria-label="Search"
-                >
-                    🔎
-                </button>
+                <a href="{{ route('login') }}"
+                   class="px-14 md:px-16 py-5 rounded-full border border-white/20 text-white font-semibold
+                          hover:bg-white/10 transition-all text-lg md:text-xl">
+                    Se connecter
+                </a>
             </div>
+        </section>
 
-        </div>
+        <!-- Features Section -->
+        <section class="pt-16 pb-20 md:pt-20 md:pb-24 border-t border-white/10">
+            <div class="max-w-5xl mx-auto">
+                <div class="grid md:grid-cols-3 gap-12 md:gap-16">
+                    <div class="text-center px-2">
+                        <div class="text-5xl mb-8">🏠</div>
+                        <h3 class="text-xl font-semibold text-white mb-5">Gestion simplifiée</h3>
+                        <p class="text-white/60 text-base md:text-lg leading-relaxed">
+                            Gérez vos dépenses et colocataires facilement
+                        </p>
+                    </div>
+
+                    <div class="text-center px-2">
+                        <div class="text-5xl mb-8">💰</div>
+                        <h3 class="text-xl font-semibold text-white mb-5">Suivi des dépenses</h3>
+                        <p class="text-white/60 text-base md:text-lg leading-relaxed">
+                            Équilibrez les comptes en quelques clics
+                        </p>
+                    </div>
+
+                    <div class="text-center px-2">
+                        <div class="text-5xl mb-8">👥</div>
+                        <h3 class="text-xl font-semibold text-white mb-5">Collaboration</h3>
+                        <p class="text-white/60 text-base md:text-lg leading-relaxed">
+                            Gérez tout ensemble en temps réel
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
     </main>
+
+    <footer class="border-t border-white/10 mt-8">
+        <div class="max-w-7xl mx-auto px-6 py-8">
+            <div class="text-center text-white/40 text-sm">
+                © 2024 EasyColoc. Tous droits réservés.
+            </div>
+        </div>
+    </footer>
 
 </body>
 </html>

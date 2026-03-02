@@ -40,6 +40,11 @@ class User extends Authenticatable
         ->withTimestamps();
     }
 
+    public function isAdmin()
+    {
+        return Admin::where('user_id', $this->id)->exists();
+    }
+
     // Dettes où je dois payer
     public function debtsAsDebiteur()
     {
